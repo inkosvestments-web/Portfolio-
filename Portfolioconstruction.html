@@ -23,18 +23,16 @@
         .main-grid { display: grid; grid-template-columns: 1fr; gap: 25px; }
         @media (min-width: 1024px) { .main-grid { grid-template-columns: 5fr 7fr; } }
 
-        .panel { background: white; border: 1px solid #E2E8F0; border-radius: 16px; padding: 25px; height: fit-content; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+        .panel { background: white; border: 1px solid #E2E8F0; border-radius: 16px; padding: 25px; height: fit-content; box-shadow: 0 1px 3px rgba(0,0,0,0.02); margin-bottom: 25px; }
         .panel-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #F1F5F9; padding-bottom: 15px; margin-bottom: 20px; }
         .panel-title { font-size: 13px; font-weight: 700; text-transform: uppercase; color: #0F172A; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px; }
         .panel-title::before { content: ''; width: 4px; height: 14px; background-color: #EF3124; display: inline-block; border-radius: 2px; }
 
-        /* Стилизация интерактивной таблицы */
         .table-wrapper { overflow-x: auto; margin-bottom: 20px; }
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
         th { color: #64748B; font-weight: 600; padding: 12px 10px; border-bottom: 2px solid #F1F5F9; text-transform: uppercase; font-size: 10px; }
         td { padding: 10px 8px; border-bottom: 1px solid #F1F5F9; }
         
-        /* Поля ввода на экране */
         .input-cell { width: 100%; border: 1px solid #CBD5E1; padding: 6px 10px; border-radius: 6px; font-size: 13px; color: #0F172A; font-weight: 500; background: #F8FAFC; }
         .input-cell:focus { border-color: #EF3124; outline: none; background: white; }
         .share-input { width: 70px; text-align: center; font-family: monospace; font-size: 14px; font-weight: 700; }
@@ -43,12 +41,11 @@
         .status-badge.success { background: #DCFCE7; color: #15803D; }
         .status-badge.error { background: #FEE2E2; color: #B91C1C; }
 
-        /* Кнопки */
-        .btn { background: #0F172A; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn { background: #0F172A; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-block; }
         .btn:hover { background: #1E293B; }
         .btn-red { background: #EF3124; }
         .btn-red:hover { background: #D6281B; }
-        .btn-del { background: transparent; color: #94A3B8; font-size: 16px; padding: 4px 8px; }
+        .btn-del { background: transparent; color: #94A3B8; font-size: 16px; padding: 4px 8px; border: none; cursor: pointer; }
         .btn-del:hover { color: #EF3124; }
 
         .passport-card { background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 15px; margin-bottom: 15px; }
@@ -57,30 +54,18 @@
         .passport-text { font-size: 12px; color: #475569; line-height: 1.5; }
 
         .chart-box { height: 240px; margin-bottom: 25px; }
+        
+        .yield-management-title { font-size: 11px; text-transform: uppercase; color: #64748B; margin: 15px 0 10px 0; font-weight: 700; }
+        .yield-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .yield-period-input { width: 90px; font-weight: 600; }
 
-        /* ==========================================================================
-           КРИТИЧЕСКИЕ НАСТРОЙКИ ДЛЯ ИДЕАЛЬНОГО ПДФ / ПЕЧАТИ
-           ========================================================================== */
         @media print {
             body { background-color: white; color: black; padding: 0; }
             header { box-shadow: none; border-bottom: 2px solid #0F172A; border-radius: 0; padding: 10px 0; }
             .panel { box-shadow: none; border: none; padding: 0; margin-bottom: 30px; page-break-inside: avoid; }
-            .main-grid { display: block; } /* Печать в один аккуратный столбец без разрывов */
-            
-            /* Скрываем все интерактивные кнопки, мусор и панели ввода */
-            .btn, .btn-del, .no-print, #add-form-container, th:last-child, td:last-child { display: none !important; }
-            
-            /* Превращаем поля ввода в чистый текст без рамок, заливок и сжатия */
-            .input-cell {
-                border: none !important;
-                background: transparent !important;
-                padding: 0 !important;
-                font-size: 13px !important;
-                color: #0F172A !important;
-                box-shadow: none !important;
-                -webkit-appearance: none;
-                appearance: none;
-            }
+            .main-grid { display: block; }
+            .btn, .btn-del, .no-print, #add-form-container, #yield-form-container, th:last-child, td:last-child { display: none !important; }
+            .input-cell { border: none !important; background: transparent !important; padding: 0 !important; font-size: 13px !important; color: #0F172A !important; box-shadow: none !important; -webkit-appearance: none; appearance: none; }
             .share-input { font-weight: 700 !important; text-align: left !important; }
             td { padding: 12px 10px !important; border-bottom: 1px solid #E2E8F0 !important; }
             .passport-card { background: white !important; border: 1px solid #E2E8F0 !important; page-break-inside: avoid; }
@@ -104,40 +89,52 @@
         </header>
 
         <div class="main-grid">
-            <div class="panel">
-                <div class="panel-header">
-                    <div class="panel-title">Управление аллокацией активов</div>
-                    <div id="status-container" class="no-print">
-                        <span id="status-badge" class="status-badge success">✓ Доли: 100%</span>
+            <!-- Левая колонка: Калькулятор и тонкие настройки параметров -->
+            <div>
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">Управление аллокацией активов</div>
+                        <div id="status-container" class="no-print">
+                            <span id="status-badge" class="status-badge success">✓ Доли: 100%</span>
+                        </div>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Название фонда</th>
+                                    <th style="text-align: center; width: 100px;">Доля %</th>
+                                    <th style="width: 50px;" class="no-print"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="funds-tbody"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Форма добавления нового фонда -->
+                    <div id="add-form-container" style="background: #F8FAFC; padding: 15px; border-radius: 12px; border: 1px solid #E2E8F0;">
+                        <h4 style="font-size: 11px; text-transform: uppercase; color: #64748B; margin-bottom: 10px;">Добавить новый фонд в модель:</h4>
+                        <input type="text" id="new-name" class="input-cell" placeholder="Название фонда (например, АК БАРС Облигации)" style="margin-bottom: 10px; background: white;">
+                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                            <input type="number" id="new-share" class="input-cell share-input" placeholder="Доля %" style="background: white;">
+                            <input type="text" id="new-goal" class="input-cell" placeholder="Цель (например, Защита капитала)" style="background: white;">
+                        </div>
+                        <textarea id="new-insight" class="input-cell" placeholder="Аналитический инсайд / Мнение советника..." style="height: 60px; margin-bottom: 12px; background: white; font-size: 12px; resize: none;"></textarea>
+                        <button type="button" class="btn btn-red" onclick="addNewFund()">Добавить в структуру</button>
                     </div>
                 </div>
 
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Название фонда</th>
-                                <th style="text-align: center; width: 100px;">Доля %</th>
-                                <th style="width: 50px;" class="no-print"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="funds-tbody">
-                            </tbody>
-                    </table>
-                </div>
-
-                <div id="add-form-container" style="background: #F8FAFC; padding: 15px; border-radius: 12px; border: 1px solid #E2E8F0;">
-                    <h4 style="font-size: 11px; text-transform: uppercase; color: #64748B; margin-bottom: 10px;">Добавить новый фонд в модель:</h4>
-                    <input type="text" id="new-name" class="input-cell" placeholder="Название фонда (например, АК БАРС Облигации)" style="margin-bottom: 10px; background: white;">
-                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                        <input type="number" id="new-share" class="input-cell share-input" placeholder="Доля %" style="background: white;">
-                        <input type="text" id="new-goal" class="input-cell" placeholder="Цель (например, Защита капитала)" style="background: white;">
+                <!-- Управление периодами и доходностью напрямую -->
+                <div class="panel no-print" id="yield-form-container">
+                    <div class="panel-header">
+                        <div class="panel-title">Управление точками графика доходности</div>
                     </div>
-                    <textarea id="new-insight" class="input-cell" placeholder="Аналитический инсайд / Мнение советника..." style="height: 60px; margin-bottom: 12px; background: white; font-size: 12px; resize: none;"></textarea>
-                    <button type="button" class="btn btn-red" onclick="addNewFund()">Добавить в структуру</button>
+                    <div id="yield-inputs-zone"></div>
                 </div>
             </div>
 
+            <!-- Правая колонка: Графики и Паспорта -->
             <div class="panel">
                 <div class="panel-header">
                     <div class="panel-title">Исторический трек и Аналитические паспорта</div>
@@ -147,14 +144,16 @@
                     <canvas id="portfolioChart"></canvas>
                 </div>
 
-                <div id="passports-container">
-                    </div>
+                <div id="passports-container"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // Базовые данные по фондам (Константин, ты можешь менять их прямо здесь)
+        // Глобальные периоды времени (Константин, их можно редактировать прямо на экране)
+        let periods = ["1 мес", "3 мес", "6 мес", "1 год"];
+
+        // Базовая структура данных фондов с возможностью кастомизации трека
         let fundsData = [
             {
                 name: "АК БАРС Облигации",
@@ -177,6 +176,7 @@
         function initApp() {
             renderTable();
             renderPassports();
+            renderYieldModifiers();
             updateChart();
         }
 
@@ -222,6 +222,63 @@
             });
         }
 
+        // Генерация полей изменения доходности для каждой точки на экране
+        function renderYieldModifiers() {
+            const container = document.getElementById('yield-inputs-zone');
+            container.innerHTML = '';
+
+            // 1. Поля изменения названий периодов под графиком
+            const headerTitle = document.createElement('div');
+            headerTitle.className = 'yield-management-title';
+            headerTitle.innerText = '1. Названия периодов на графике:';
+            container.appendChild(headerTitle);
+
+            const periodRow = document.createElement('div');
+            periodRow.className = 'yield-row';
+            periods.forEach((p, i) => {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'input-cell yield-period-input';
+                input.value = p;
+                input.onchange = function() { periods[i] = this.value; updateChart(); };
+                periodRow.appendChild(input);
+            });
+            container.appendChild(periodRow);
+
+            // 2. Ввод числовых параметров доходности по каждому фонду
+            fundsData.forEach((fund, fIndex) => {
+                const fundTitle = document.createElement('div');
+                fundTitle.className = 'yield-management-title';
+                fundTitle.innerText = `Доходность (%) для: ${fund.name}`;
+                container.appendChild(fundTitle);
+
+                const inputsRow = document.createElement('div');
+                inputsRow.className = 'yield-row';
+
+                for(let i=0; i<4; i++) {
+                    if (fund.yields[i] === undefined) fund.yields[i] = 0;
+                    
+                    const wrapper = document.createElement('div');
+                    wrapper.style.position = 'relative';
+                    wrapper.style.flex = '1';
+
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.step = '0.1';
+                    input.className = 'input-cell';
+                    input.value = fund.yields[i];
+                    input.onchange = function() { 
+                        fund.yields[i] = parseFloat(this.value) || 0; 
+                        updateChart(); 
+                    };
+
+                    wrapper.appendChild(input);
+                    inputsRow.appendChild(wrapper);
+                }
+                container.appendChild(inputsRow);
+            });
+        }
+
         function updateFundData(index, field, value) {
             fundsData[index][field] = value;
             if (field === 'share') {
@@ -230,6 +287,7 @@
                 updateChart();
             } else if (field === 'name') {
                 renderPassports();
+                renderYieldModifiers();
             }
         }
 
@@ -259,10 +317,9 @@
                 share: share,
                 goal: goal,
                 insight: insight,
-                yields: [1.4, 4.1, 8.3, 16.0] // Среднерыночный трек по умолчанию
+                yields: [1.0, 3.0, 6.0, 12.0]
             });
 
-            // Очистка формы
             document.getElementById('new-name').value = '';
             document.getElementById('new-share').value = '';
             document.getElementById('new-goal').value = '';
@@ -279,7 +336,6 @@
         function updateChart() {
             const ctx = document.getElementById('portfolioChart').getContext('2d');
             
-            // Взвешенный расчет доходности портфеля на основе долей
             let totalShare = fundsData.reduce((sum, f) => sum + f.share, 0) || 100;
             let blendedYields = [0, 0, 0, 0];
 
@@ -297,7 +353,7 @@
             chartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: ['1 месяц', '3 месяца', '6 месяцев', '1 год'],
+                    labels: periods,
                     datasets: [{
                         label: 'Взвешенная доходность портфеля (%)',
                         data: blendedYields.map(v => parseFloat(v.toFixed(2))),
@@ -330,4 +386,3 @@
     </script>
 </body>
 </html>
- 
