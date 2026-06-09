@@ -53,9 +53,13 @@
         .passport-goal { font-size: 11px; font-weight: 600; color: #EF3124; text-transform: uppercase; margin-bottom: 8px; }
         .passport-text { font-size: 12px; color: #475569; line-height: 1.5; }
 
-        .charts-container { display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 25px; }
-        @media (min-width: 600px) { .charts-container { grid-template-columns: 1fr 1fr; } }
-        .chart-box { height: 220px; position: relative; }
+        /* Премиальная строка доходности портфеля */
+        .yield-result-row { background: #0F172A; color: white; padding: 16px 20px; border-radius: 12px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08); }
+        .yield-result-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #94A3B8; font-weight: 600; }
+        .yield-result-period { font-size: 15px; font-weight: 700; margin-top: 2px; color: #FFFFFF; }
+        .yield-result-value { font-size: 28px; font-weight: 900; color: #EF3124; font-family: monospace; }
+
+        .chart-box { height: 260px; position: relative; margin-bottom: 30px; }
         
         .portfolio-yield-section { background: #F8FAFC; border: 1px solid #E2E8F0; padding: 15px; border-radius: 12px; margin-top: 20px; }
         .yield-flex-inputs { display: flex; gap: 12px; margin-top: 10px; }
@@ -65,7 +69,9 @@
             header { box-shadow: none; border-bottom: 2px solid #0F172A; border-radius: 0; padding: 10px 0; }
             .panel { box-shadow: none; border: none; padding: 0; margin-bottom: 30px; page-break-inside: avoid; }
             .main-grid { display: block; }
-            .charts-container { grid-template-columns: 1fr 1fr !important; gap: 30px; }
+            .yield-result-row { background: #F8FAFC !important; border: 2px solid #0F172A !important; color: #0F172A !important; box-shadow: none; }
+            .yield-result-label { color: #64748B !important; }
+            .yield-result-period { color: #0F172A !important; }
             .btn, .btn-del, .no-print, #add-form-container, .portfolio-yield-section, th:last-child, td:last-child { display: none !important; }
             .input-cell { border: none !important; background: transparent !important; padding: 0 !important; font-size: 13px !important; color: #0F172A !important; box-shadow: none !important; -webkit-appearance: none; appearance: none; }
             .share-input { font-weight: 700 !important; text-align: left !important; }
@@ -77,7 +83,7 @@
 <body>
 
     <div class="container">
-        <!-- Шапка -->
+        <!-- Шапка бренда -->
         <header>
             <div class="logo-area">
                 <div class="logo">А</div>
@@ -92,7 +98,7 @@
         </header>
 
         <div class="main-grid">
-            <!-- Левая колонка: Структура долей и ввод доходности -->
+            <!-- Левая колонка: Таблица и Управление параметрами -->
             <div>
                 <div class="panel">
                     <div class="panel-header">
@@ -127,13 +133,13 @@
                         <button type="button" class="btn btn-red" onclick="addNewFund()">Добавить в структуру</button>
                     </div>
 
-                    <!-- Управление фактической исторической доходностью -->
+                    <!-- Панель настройки доходности всей строки -->
                     <div class="portfolio-yield-section no-print">
-                        <h4 style="font-size: 11px; text-transform: uppercase; color: #64748B;">Фактическая доходность портфеля за период:</h4>
+                        <h4 style="font-size: 11px; text-transform: uppercase; color: #64748B;">Настройка итоговой строки доходности:</h4>
                         <div class="yield-flex-inputs">
                             <div style="flex: 2;">
-                                <label style="font-size: 10px; color: #64748B; display:block; margin-bottom:4px;">Фактический период</label>
-                                <input type="text" id="portfolio-period" class="input-cell" value="Фактическая доходность за сезон" style="background: white;" oninput="updatePortfolioYield()">
+                                <label style="font-size: 10px; color: #64748B; display:block; margin-bottom:4px;">Текст периода</label>
+                                <input type="text" id="portfolio-period" class="input-cell" value="Фактическая доходность за прошлый сезон" style="background: white;" oninput="updatePortfolioYield()">
                             </div>
                             <div style="flex: 1;">
                                 <label style="font-size: 10px; color: #64748B; display:block; margin-bottom:4px;">Результат %</label>
@@ -144,37 +150,39 @@
                 </div>
             </div>
 
-            <!-- Правая колонка: Два сопоставленных графика и паспорта активов -->
+            <!-- Правая колонка: Строка доходности + Пирог долей + Паспорта -->
             <div class="panel">
                 <div class="panel-header">
-                    <div class="panel-title">Аналитика, структура и исторические результаты</div>
+                    <div class="panel-title">Аналитика и структура портфеля</div>
                 </div>
 
-                <!-- Блок графиков (в один ряд на экране и в PDF) -->
-                <div class="charts-container">
-                    <div class="chart-box">
-                        <canvas id="yieldChart"></canvas>
+                <!-- ОТДЕЛЬНАЯ СТРОКА: Фактическая доходность портфеля за указанный период -->
+                <div class="yield-result-row">
+                    <div>
+                        <div class="yield-result-label">Результат управления портфелем</div>
+                        <div id="display-period" class="yield-result-period">Фактическая доходность за прошлый сезон</div>
                     </div>
-                    <div class="chart-box">
-                        <canvas id="shareChart"></canvas>
-                    </div>
+                    <div id="display-value" class="yield-result-value">+18.2%</div>
                 </div>
 
+                <!-- ДИАГРАММА В ВИДЕ ПИРОГА С ДОЛЯМИ -->
+                <div class="chart-box">
+                    <canvas id="shareChart"></canvas>
+                </div>
+
+                <!-- Паспорта фондов под графиком -->
                 <div id="passports-container"></div>
             </div>
         </div>
     </div>
 
     <script>
-        let globalPeriod = "Фактическая доходность за сезон";
-        let globalYieldValue = 18.2;
-
         let fundsData = [
             {
                 name: "АК БАРС Облигации",
                 share: 60,
                 goal: "Защита капитала",
-                insight: "Фонд демонстрирует стабильную доходность выше депозитов за счет качественного динамического управления портфелем корпораческих облигаций первого эшелона."
+                insight: "Фонд демонстрирует стабильную доходность выше депозитов за счет качественного динамического управления портфелем корпоративных облигаций первого эшелона."
             },
             {
                 name: "Альфа-Капитал Ликвидность",
@@ -184,22 +192,21 @@
             }
         ];
 
-        let yieldChartInstance = null;
         let shareChartInstance = null;
 
-        // Палитра премиальных цветов для распределения долей фондов
+        // Палитра премиальных цветов Альфа-Капитал Private
         const chartColors = [
-            '#EF3124', // Фирменный красный Альфа
-            '#0F172A', // Глубокий темно-серый
+            '#EF3124', // Фирменный красный
+            '#0F172A', // Глубокий графит
             '#475569', // Стальной
-            '#94A3B8', // Светло-серый
-            '#CBD5E1'  // Платиновый
+            '#94A3B8', // Дымчатый
+            '#CBD5E1'  // Светло-серебряный
         ];
 
         function initApp() {
             renderTable();
             renderPassports();
-            updateCharts();
+            updatePortfolioYield(); // Обновляет строку и перерисовывает круговой график
         }
 
         function renderTable() {
@@ -249,17 +256,22 @@
             if (field === 'share') {
                 checkTotalShare();
                 renderPassports();
-                updateCharts();
+                renderShareChart();
             } else if (field === 'name') {
                 renderPassports();
-                updateCharts();
+                renderShareChart();
             }
         }
 
+        // Синхронизация данных с отдельной строкой фактических результатов
         function updatePortfolioYield() {
-            globalPeriod = document.getElementById('portfolio-period').value.trim() || "Фактическая доходность";
-            globalYieldValue = parseFloat(document.getElementById('portfolio-value').value) || 0;
-            updateCharts();
+            const periodInput = document.getElementById('portfolio-period').value.trim() || "Фактическая доходность";
+            const valueInput = parseFloat(document.getElementById('portfolio-value').value) || 0;
+
+            document.getElementById('display-period').innerText = periodInput;
+            document.getElementById('display-value').innerText = (valueInput >= 0 ? '+' : '') + valueInput + '%';
+
+            renderShareChart();
         }
 
         function checkTotalShare() {
@@ -298,47 +310,20 @@
             initApp();
         }
 
-        function updateCharts() {
-            const ctxYield = document.getElementById('yieldChart').getContext('2d');
+        // Рендеринг исключительно круговой диаграммы (пирога долей)
+        function renderShareChart() {
             const ctxShare = document.getElementById('shareChart').getContext('2d');
             
-            if (yieldChartInstance) yieldChartInstance.destroy();
-            if (shareChartInstance) shareChartInstance.destroy();
+            if (shareChartInstance) {
+                shareChartInstance.destroy();
+            }
 
-            // 1. Рендеринг столбца Фактической доходности
-            yieldChartInstance = new Chart(ctxYield, {
-                type: 'bar',
-                data: {
-                    labels: [globalPeriod],
-                    datasets: [{
-                        data: [globalYieldValue],
-                        backgroundColor: '#EF3124',
-                        borderRadius: 8,
-                        barThickness: 70
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { 
-                        legend: { display: false },
-                        title: { display: true, text: 'ФАКТИЧЕСКАЯ ДОХОДНОСТЬ ПОРТФЕЛЯ', color: '#64748B', font: { size: 10, weight: 'bold' } }
-                    },
-                    scales: {
-                        y: { grid: { color: '#F1F5F9' }, ticks: { callback: v => v + '%', color: '#64748B' } },
-                        x: { grid: { display: false }, ticks: { color: '#0F172A', font: { weight: 600 } } }
-                    }
-                }
-            });
-
-            // Подготовка актуальных отфильтрованных данных для кругового графика долей
             const activeFunds = fundsData.filter(f => f.share > 0);
             const shareLabels = activeFunds.map(f => f.name);
             const shareValues = activeFunds.map(f => f.share);
 
-            // 2. Рендеринг круговой диаграммы распределения долей по фондам
             shareChartInstance = new Chart(ctxShare, {
-                type: 'doughnut',
+                type: 'pie', // Классический сплошной пирог
                 data: {
                     labels: shareLabels,
                     datasets: [{
@@ -355,9 +340,15 @@
                         legend: { 
                             display: true, 
                             position: 'bottom',
-                            labels: { boxWidth: 12, padding: 10, color: '#475569', font: { size: 10 } }
+                            labels: { boxWidth: 14, padding: 15, color: '#475569', font: { size: 11, weight: 500 } }
                         },
-                        title: { display: true, text: 'СТРУКТУРА ДОЛЕЙ В МОДЕЛИ (%)', color: '#64748B', font: { size: 10, weight: 'bold' } }
+                        title: { 
+                            display: true, 
+                            text: 'ГРАФИЧЕСКАЯ СТРУКТУРА ДОЛЕЙ ПОРТФЕЛЯ (%)', 
+                            color: '#64748B', 
+                            font: { size: 11, weight: 'bold' },
+                            padding: { bottom: 15 }
+                        }
                     }
                 }
             });
