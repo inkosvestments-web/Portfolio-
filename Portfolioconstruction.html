@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALFA PRIVATE — КОНСТРУКТОР ПОРТФЕЛЯ</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: #F1F5F9; color: #0F172A; padding: 20px; -webkit-font-smoothing: antialiased; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        header { display: flex; justify-content: space-between; align-items: center; background: white; padding: 20px 25px; border-radius: 16px; border: 1px solid #E2E8F0; margin-bottom: 25px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+        .logo-area { display: flex; align-items: center; gap: 15px; }
+        .logo { background-color: #EF3124; color: white; font-weight: 900; font-size: 26px; padding: 4px 16px; border-radius: 8px; letter-spacing: -1px; }
+        .logo-title { font-size: 18px; font-weight: 700; color: #0F172A; text-transform: uppercase; }
+        .logo-subtitle { font-size: 11px; color: #64748B; margin-top: 2px; }
+        .author-area { text-align: right; }
+        .author-title { font-size: 11px; color: #64748B; }
+        .author-name { font-size: 14px; font-weight: 700; color: #0F172A; }
+        .btn-back { display: inline-block; background-color: #FFF; border: 1px solid #E2E8F0; color: #475569; padding: 8px 16px; font-size: 12px; font-weight: 700; border-radius: 8px; text-decoration: none; margin-bottom: 20px; transition: 0.2s; }
+        .btn-back:hover { background-color: #F8FAFC; border-color: #EF3124; color: #EF3124; }
+        .grid { display: grid; grid-template-columns: 1fr; gap: 25px; }
+        @media (min-width: 1024px) { .grid { grid-template-columns: 5fr 7fr; } }
+        .panel { background-color: white; border: 1px solid #E2E8F0; border-radius: 16px; padding: 20px; height: fit-content; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #F1F5F9; padding-bottom: 12px; margin-bottom: 15px; }
+        .panel-title { font-size: 13px; font-weight: 700; text-transform: uppercase; color: #0F172A; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px; }
+        .panel-title::before { content: ''; width: 4px; height: 14px; background-color: #EF3124; display: inline-block; border-radius: 2px; }
+        .panel-subtitle { font-size: 11px; color: #64748B; margin-bottom: 15px; }
+        .btn-add { background-color: #F1F5F9; color: #334155; border: 1px solid #E2E8F0; padding: 6px 12px; font-size: 11px; font-weight: 700; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+        .btn-add:hover { background-color: #EF3124; border-color: #EF3124; color: white; }
+        .btn-calc { background-color: #EF3124; color: white; border: none; padding: 10px 20px; font-size: 12px; font-weight: 700; border-radius: 10px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em; transition: 0.2s; }
+        .btn-calc:hover { background-color: #d6281b; }
+        .btn-del { background-color: transparent; border: none; color: #94A3B8; cursor: pointer; font-size: 12px; transition: 0.2s; }
+        .btn-del:hover { color: #ef4444; }
+        .row-item { background-color: #F8FAFC; border: 1px solid #E2E8F0; padding: 12px; border-radius: 10px; margin-bottom: 12px; }
+        .inputs-grid { display: grid; grid-template-columns: 8fr 3fr 1fr; gap: 10px; margin-bottom: 8px; align-items: end; }
+        .sub-inputs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        label { display: block; font-size: 9px; color: #64748B; text-transform: uppercase; margin-bottom: 4px; font-weight: 600; }
+        input { width: 100%; background-color: white; border: 1px solid #E2E8F0; border-radius: 6px; padding: 6px 10px; color: #0F172A; font-size: 12px; outline: none; }
+        input:focus { border-color: #EF3124; }
+        .footer-panel { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; border-top: 1px solid #F1F5F9; padding-top: 15px;}
+        .alert-status { font-size: 12px; font-weight: 600; }
+        .status-ok { color: #10b981; }
+        .status-error { color: #ef4444; }
+        .chart-box { display: grid; grid-template-columns: 1fr; gap: 20px; background-color: white; border: 1px solid #E2E8F0; padding: 20px; border-radius: 16px; margin-bottom: 20px; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+        @media (min-width: 640px) { .chart-box { grid-template-columns: 5fr 7fr; } }
+        .canvas-container { position: relative; height: 160px; width: 100%; display: flex; align-items: center; justify-content: center; }
+        .legend-container { display: flex; flex-direction: column; gap: 6px; }
+        .legend-item { display: flex; justify-content: space-between; align-items: center; font-size: 12px; padding: 3px 6px; border-radius: 4px; }
+        .legend-left { display: flex; align-items: center; gap: 8px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .legend-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+        .legend-name { color: #334155; overflow: hidden; text-overflow: ellipsis; }
+        .legend-val { font-weight: 700; color: #0F172A; font-family: monospace; }
+        .yield-box { background-color: white; border: 1px solid #E2E8F0; padding: 20px; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+        .yield-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #F1F5F9; padding-bottom: 10px; }
+        .yield-badge { font-size: 12px; font-family: monospace; font-weight: 700; color: #10b981; background-color: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.15); padding: 2px 8px; border-radius: 4px; }
+        .passport-card { background-color: #F8FAFC; border: 1px solid #E2E8F0; padding: 15px; border-radius: 12px; margin-bottom: 12px; position: relative; overflow: hidden; }
+        .passport-accent { position: absolute; top: 0; left: 0; bottom: 0; width: 4px; }
+        .passport-top { display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px; padding-left: 8px; }
+        .passport-title { font-size: 13px; font-weight: 700; color: #0F172A; }
+        .passport-badge { font-size: 10px; font-family: monospace; background-color: white; color: #64748B; border: 1px solid #E2E8F0; padding: 2px 6px; border-radius: 4px; font-weight: 700; }
+        .passport-body { display: grid; grid-template-columns: 1fr; gap: 15px; padding-left: 8px; border-top: 1px solid #E2E8F0; padding-top: 10px; }
+        @media (min-width: 640px) { .passport-body { grid-template-columns: 1fr 1fr; } }
+        .passport-sec-title { font-size: 9px; font-weight: 700; text-transform: uppercase; margin-bottom: 3px; display: block; }
+        .text-red { color: #EF3124; }
+        .text-slate { color: #64748B; }
+        .passport-p { font-size: 12px; color: #334155; line-height: 1.5; }
+        .scroller { max-height: 320px; overflow-y: auto; padding-right: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-area">
+                <div class="logo">А</div>
+                <div>
+                    <div class="logo-title">Альфа-Капитал <span style="font-size: 10px; color: white; font-family: monospace; background: #EF3124; padding: 2px 6px; border-radius: 4px; margin-left: 5px;">CONSTRUCTOR</span></div>
+                    <div class="logo-subtitle">Интерактивный конструктор аллокации и верификации доходности</div>
+                </div>
+            </div>
+            <div class="author-area">
+                <div class="author-title">Личный советник</div>
+                <div class="author-name">Константин</div>
+            </div>
+        </header>
+        <div class="grid">
+            <div style="display: flex; flex-direction: column; gap: 25px;">
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">Состав портфеля</div>
+                        <button class="btn-add" onclick="addAssetRow()">+ Добавить актив</button>
+                    </div>
+                    <div class="panel-subtitle">*Сумма долей всех фондов в портфеле должна составлять ровно 100%.</div>
+                    <div id="assetsContainer" class="scroller">
+                        <div class="asset-row row-item">
+                            <div class="inputs-grid">
+                                <div>
+                                    <label>Фонд / Актив</label>
+                                    <input type="text" class="asset-name" value="ЗПИФ Коммерческая недвижимость">
+                                </div>
+                                <div>
+                                    <label style="text-align: center;">Доля (%)</label>
+                                    <input type="number" class="asset-share" value="100">
+                                </div>
+                                <div style="text-align: center;">
+                                    <button class="btn-del" onclick="this.closest('.asset-row').remove(); renderAll();">❌</button>
+                                </div>
+                            </div>
+                            <div class="sub-inputs-grid">
+                                <div>
+                                    <label>Чего ждем (Цель)</label>
+                                    <input type="text" class="asset-target" value="Ежемесячный стабильный рентный доход">
+                                </div>
+                                <div>
+                                    <label>Краткая аналитика</label>
+                                    <input type="text" class="asset-analysis" value="Фокус на топ-склады. Защита капитала от инфляции.">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">Исторические периоды</div>
+                        <button class="btn-add" onclick="addYieldRow()">+ Добавить период</button>
+                    </div>
+                    <div class="panel-subtitle">*Вводи любые отрезки (год, квартал или дату) и результат доходности.</div>
+                    <div id="yieldContainer" class="scroller" style="max-height: 200px;">
+                        <div class="yield-row row-item" style="display: grid; grid-template-columns: 6fr 5fr 1fr; gap: 10px; align-items: end;">
+                            <div>
+                                <label>Период / Дата</label>
+                                <input type="text" class="yield-period" value="За весь 2025 год">
+                            </div>
+                            <div>
+                                <label style="text-align: center;">Доходность (% годовых)</label>
+                                <input type="number" class="yield-value" value="21.4" style="text-align: center; color: #10b981; font-weight: 700;">
+                            </div>
+                            <div style="text-align: center; padding-bottom: 5px;">
+                                <button class="btn-del" onclick="this.closest('.yield-row').remove(); renderAll();">❌</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer-panel">
+                        <div id="shareAlert" class="alert-status status-ok">✓ Доли: 100%</div>
+                        <button class="btn-calc" onclick="renderAll()">Обновить графики</button>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="chart-box">
+                    <div class="canvas-container">
+                        <canvas id="portfolioChart"></canvas>
+                    </div>
+                    <div>
+                        <div class="panel-title" style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">Текущая аллокация активов</div>
+                        <div id="chartLegend" class="legend-container"></div>
+                    </div>
+                </div>
+                <div class="yield-box">
+                    <div class="yield-header">
+                        <div class="panel-title" style="font-size: 11px;">📈 Верификация доходности портфеля</div>
+                        <div id="avgYieldBadge" class="yield-badge">Итог: +21.4%</div>
+                    </div>
+                    <div style="position: relative; height: 200px; width: 100%;">
+                        <canvas id="yieldChart"></canvas>
+                    </div>
+                </div>
+                <div class="panel" style="width: 100%;">
+                    <div class="panel-title" style="font-size: 11px; border-bottom: 1px solid #F1F5F9; padding-bottom: 10px; margin-bottom: 15px;">Стратегический паспорт позиций</div>
+                    <div id="analyticsCardsContainer"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let portfolioChartInstance = null;
+        let yieldChartInstance = null;
+        const colorPalette = ['#EF3124', '#2563EB', '#10B981', '#F59E0B', '#6366F1', '#84CC16', '#475569', '#94A3B8'];
+        function addAssetRow() {
+            const container = document.getElementById('assetsContainer');
+            const div = document.createElement('div');
+            div.className = 'asset-row row-item';
+            div.innerHTML = `
+                <div class="inputs-grid">
+                    <div>
+                        <label>Фонд / Актив</label>
+                        <input type="text" class="asset-name" placeholder="Название фонда">
+                    </div>
+                    <div>
+                        <label style="text-align: center;">Доля (%)</label>
+                        <input type="number" class="asset-share" value="0">
+                    </div>
+                    <div style="text-align: center;">
+                        <button class="btn-del" onclick="this.closest('.asset-row').remove(); renderAll();">❌</button>
+                    </div>
+                </div>
+                <div class="sub-inputs-grid">
+                    <div>
+                        <label>Чего ждем (Цель)</label>
+                        <input type="text" class="asset-target" placeholder="Целевой ориентир">
+                    </div>
+                    <div>
+                        <label>Краткая аналитика</label>
+                        <input type="text" class="asset-analysis" placeholder="Аналитический инсайд">
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+        function addYieldRow() {
+            const container = document.getElementById('yieldContainer');
+            const div = document.createElement('div');
+            div.className = 'yield-row row-item';
+            div.style = 'display: grid; grid-template-columns: 6fr 5fr 1fr; gap: 10px; align-items: end;';
+            div.innerHTML = `
+                <div>
+                    <label>Период / Дата</label>
+                    <input type="text" class="yield-period" placeholder="Напр: I кв. 2026 / дата">
+                </div>
+                <div>
+                    <label style="text-align: center;">Доходность (% годовых)</label>
+                    <input type="number" class="yield-value" value="0" style="text-align: center; color: #10b981; font-weight: 700;">
+                </div>
+                <div style="text-align: center; padding-bottom: 5px;">
+                    <button class="btn-del" onclick="this.closest('.yield-row').remove(); renderAll();">❌</button>
+                </div>
+            `;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+        function renderAll() {
+            const assetRows = document.querySelectorAll('.asset-row');
+            let labels = []; let shares = []; let targets = []; let analytics = []; let totalShare = 0;
+            assetRows.forEach(row => {
+                const name = row.querySelector('.asset-name').value.trim();
+                const share = parseFloat(row.querySelector('.asset-share').value) || 0;
+                const target = row.querySelector('.asset-target').value.trim();
+                const analysis = row.querySelector('.asset-analysis').value.trim();
+                if (name || share > 0) {
+                    labels.push(name || "Новый актив");
+                    shares.push(share);
+                    targets.push(target || "Формируется советником.");
+                    analytics.push(analysis || "Данные актуализируются.");
+                    totalShare += share;
+                }
+            });
+            const alertDiv = document.getElementById('shareAlert');
+            if (totalShare !== 100) {
+                alertDiv.innerText = `⚠️ Ошибка долей: ${totalShare}%`;
+                alertDiv.className = "alert-status status-error";
+            } else {
+                alertDiv.innerText = `✓ Доли: 100%`;
+                alertDiv.className = "alert-status status-ok";
+            }
+            if (portfolioChartInstance) { portfolioChartInstance.destroy(); }
+            const canvasPie = document.getElementById('portfolioChart');
+            if (canvasPie) {
+                portfolioChartInstance = new Chart(canvasPie.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{ data: shares, backgroundColor: colorPalette.slice(0, labels.length), borderWidth: 2, borderColor: '#FFFFFF' }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, cutout: '75%' }
+                });
+            }
+            const legContainer = document.getElementById('chartLegend');
+            if (legContainer) {
+                legContainer.innerHTML = '';
+                labels.forEach((label, idx) => {
+                    legContainer.innerHTML += `
+                        <div class="legend-item">
+                            <div class="legend-left">
+                                <span class="legend-dot" style="background-color: ${colorPalette[idx % colorPalette.length]}"></span>
+                                <span class="legend-name">${label}</span>
+                            </div>
+                            <span class="legend-val">${shares[idx]}%</span>
+                        </div>`;
+                });
+            }
+            const yieldRows = document.querySelectorAll('.yield-row');
+            let yieldLabels = []; let yieldValues = [];
+            yieldRows.forEach(row => {
+                const period = row.querySelector('.yield-period').value.trim();
+                const val = parseFloat(row.querySelector('.yield-value').value) || 0;
+                if (period) {
+                    yieldLabels.push(period);
+                    yieldValues.push(val);
+                }
+            });
+            if (yieldChartInstance) { yieldChartInstance.destroy(); }
+            const canvasYield = document.getElementById('yieldChart');
+            if (canvasYield) {
+                if (yieldLabels.length === 0) {
+                    document.getElementById('avgYieldBadge').innerText = "Нет данных";
+                } else {
+                    const avg = (yieldValues.reduce((a, b) => a + b, 0) / yieldValues.length).toFixed(1);
+                    document.getElementById('avgYieldBadge').innerText = `Итог: ${avg > 0 ? '+' : ''}${avg}%`;
+                    const chartType = (yieldLabels.length === 1) ? 'bar' : 'line';
+                    let datasetConfig = {
+                        label: 'Доходность',
+                        data: yieldValues,
+                        backgroundColor: chartType === 'bar' ? '#EF3124' : 'rgba(239, 49, 36, 0.05)',
+                        borderColor: '#EF3124',
+                        borderWidth: 2
+                    };
+                    if (chartType === 'line') {
+                        datasetConfig.fill = true;
+                        datasetConfig.tension = 0.15;
+                        datasetConfig.pointBackgroundColor = '#FFFFFF';
+                        datasetConfig.pointRadius = 4;
+                    } else {
+                        datasetConfig.maxBarThickness = 80;
+                        datasetConfig.borderRadius = 6;
+                    }
+                    yieldChartInstance = new Chart(canvasYield.getContext('2d'), {
+                        type: chartType,
+                        data: { labels: yieldLabels, datasets: [datasetConfig] },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: { grid: { color: '#F1F5F9' }, ticks: { color: '#64748b', callback: function(v) { return v + '%'; } } },
+                                x: { grid: { color: 'transparent' }, ticks: { color: '#64748b' } }
+                            },
+                            plugins: { legend: { display: false } }
+                        }
+                    });
+                }
+            }
+            const cardsContainer = document.getElementById('analyticsCardsContainer');
+            if (cardsContainer) {
+                cardsContainer.innerHTML = '';
+                if (labels.length === 0) {
+                    cardsContainer.innerHTML = '<div style="font-size: 12px; color: #64748b; text-align: center; padding: 15px;">Добавьте активы для вывода аналитики.</div>';
+                    return;
+                }
+                labels.forEach((label, index) => {
+                    cardsContainer.innerHTML += `
+                        <div class="passport-card">
+                            <div class="passport-accent" style="background-color: ${colorPalette[index % colorPalette.length]}"></div>
+                            <div class="passport-top">
+                                <div class="passport-title">${label}</div>
+                                <div class="passport-badge">${shares[index]}% портфеля</div>
+                            </div>
+                            <div class="passport-body">
+                                <div>
+                                    <span class="passport-sec-title text-red">🎯 Целевой ориентир:</span>
+                                    <p class="passport-p">${targets[index]}</p>
+                                </div>
+                                <div>
+                                    <span class="passport-sec-title text-slate">🧠 Аналитический инсайд:</span>
+                                    <p class="passport-p">${analytics[index]}</p>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+            }
+        }
+        setTimeout(renderAll, 200);
+    </script>
+</body>
+</html>
