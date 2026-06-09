@@ -53,18 +53,17 @@
         .passport-goal { font-size: 11px; font-weight: 600; color: #EF3124; text-transform: uppercase; margin-bottom: 8px; }
         .passport-text { font-size: 12px; color: #475569; line-height: 1.5; }
 
-        .chart-box { height: 240px; margin-bottom: 25px; }
+        .chart-box { height: 260px; margin-bottom: 25px; position: relative; }
         
-        .yield-management-title { font-size: 11px; text-transform: uppercase; color: #64748B; margin: 15px 0 10px 0; font-weight: 700; }
-        .yield-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-        .yield-period-input { width: 90px; font-weight: 600; }
+        .portfolio-yield-section { background: #F8FAFC; border: 1px solid #E2E8F0; padding: 15px; border-radius: 12px; margin-top: 20px; }
+        .yield-flex-inputs { display: flex; gap: 12px; margin-top: 10px; }
 
         @media print {
             body { background-color: white; color: black; padding: 0; }
             header { box-shadow: none; border-bottom: 2px solid #0F172A; border-radius: 0; padding: 10px 0; }
             .panel { box-shadow: none; border: none; padding: 0; margin-bottom: 30px; page-break-inside: avoid; }
             .main-grid { display: block; }
-            .btn, .btn-del, .no-print, #add-form-container, #yield-form-container, th:last-child, td:last-child { display: none !important; }
+            .btn, .btn-del, .no-print, #add-form-container, .portfolio-yield-section, th:last-child, td:last-child { display: none !important; }
             .input-cell { border: none !important; background: transparent !important; padding: 0 !important; font-size: 13px !important; color: #0F172A !important; box-shadow: none !important; -webkit-appearance: none; appearance: none; }
             .share-input { font-weight: 700 !important; text-align: left !important; }
             td { padding: 12px 10px !important; border-bottom: 1px solid #E2E8F0 !important; }
@@ -89,7 +88,6 @@
         </header>
 
         <div class="main-grid">
-            <!-- Левая колонка: Калькулятор и тонкие настройки параметров -->
             <div>
                 <div class="panel">
                     <div class="panel-header">
@@ -112,7 +110,6 @@
                         </table>
                     </div>
 
-                    <!-- Форма добавления нового фонда -->
                     <div id="add-form-container" style="background: #F8FAFC; padding: 15px; border-radius: 12px; border: 1px solid #E2E8F0;">
                         <h4 style="font-size: 11px; text-transform: uppercase; color: #64748B; margin-bottom: 10px;">Добавить новый фонд в модель:</h4>
                         <input type="text" id="new-name" class="input-cell" placeholder="Название фонда (например, АК БАРС Облигации)" style="margin-bottom: 10px; background: white;">
@@ -123,21 +120,26 @@
                         <textarea id="new-insight" class="input-cell" placeholder="Аналитический инсайд / Мнение советника..." style="height: 60px; margin-bottom: 12px; background: white; font-size: 12px; resize: none;"></textarea>
                         <button type="button" class="btn btn-red" onclick="addNewFund()">Добавить в структуру</button>
                     </div>
-                </div>
 
-                <!-- Управление периодами и доходностью напрямую -->
-                <div class="panel no-print" id="yield-form-container">
-                    <div class="panel-header">
-                        <div class="panel-title">Управление точками графика доходности</div>
+                    <div class="portfolio-yield-section no-print">
+                        <h4 style="font-size: 11px; text-transform: uppercase; color: #64748B;">Целевая доходность портфеля целиком:</h4>
+                        <div class="yield-flex-inputs">
+                            <div style="flex: 2;">
+                                <label style="font-size: 10px; color: #64748B; display:block; margin-bottom:4px;">Период инвестирования</label>
+                                <input type="text" id="portfolio-period" class="input-cell" value="Ожидаемая доходность (1 год)" style="background: white;" oninput="updatePortfolioYield()">
+                            </div>
+                            <div style="flex: 1;">
+                                <label style="font-size: 10px; color: #64748B; display:block; margin-bottom:4px;">Доходность %</label>
+                                <input type="number" id="portfolio-value" class="input-cell" value="16.5" step="0.1" style="background: white; font-weight:700;" oninput="updatePortfolioYield()">
+                            </div>
+                        </div>
                     </div>
-                    <div id="yield-inputs-zone"></div>
                 </div>
             </div>
 
-            <!-- Правая колонка: Графики и Паспорта -->
             <div class="panel">
                 <div class="panel-header">
-                    <div class="panel-title">Исторический трек и Аналитические паспорта</div>
+                    <div class="panel-title">Модель эффективности и аналитические паспорта</div>
                 </div>
 
                 <div class="chart-box">
@@ -150,24 +152,23 @@
     </div>
 
     <script>
-        // Глобальные периоды времени (Константин, их можно редактировать прямо на экране)
-        let periods = ["1 мес", "3 мес", "6 мес", "1 год"];
+        // Базовые параметры доходности портфеля по умолчанию
+        let globalPeriod = "Ожидаемая доходность (1 год)";
+        let globalYieldValue = 16.5;
 
-        // Базовая структура данных фондов с возможностью кастомизации трека
+        // Фонды, где мы управляем только структурой и текстовым инсайдом
         let fundsData = [
             {
                 name: "АК БАРС Облигации",
                 share: 60,
                 goal: "Защита капитала",
-                insight: "Фонд демонстрирует стабильную доходность выше депозитов за счет качественного динамического управления портфелем корпоративных облигаций первого эшелона.",
-                yields: [1.5, 4.2, 8.5, 16.2]
+                insight: "Фонд демонстрирует стабильную доходность выше депозитов за счет качественного динамического управления портфелем корпоративных облигаций первого эшелона."
             },
             {
                 name: "Альфа-Капитал Ликвидность",
                 share: 40,
                 goal: "Размещение резерва",
-                insight: "Идеальный инструмент для краткосрочного размещения крупных денежных средств. Обеспечивает доходность на уровне ставки ЦБ РФ с возможностью забрать деньги в любой день без потери накопленных процентов.",
-                yields: [1.3, 4.0, 8.1, 15.8]
+                insight: "Идеальный инструмент для краткосрочного размещения крупных денежных средств. Обеспечивает доходность на уровне ставки ЦБ РФ с возможностью забрать деньги в любой день без потери накопленных процентов."
             }
         ];
 
@@ -176,7 +177,6 @@
         function initApp() {
             renderTable();
             renderPassports();
-            renderYieldModifiers();
             updateChart();
         }
 
@@ -222,73 +222,20 @@
             });
         }
 
-        // Генерация полей изменения доходности для каждой точки на экране
-        function renderYieldModifiers() {
-            const container = document.getElementById('yield-inputs-zone');
-            container.innerHTML = '';
-
-            // 1. Поля изменения названий периодов под графиком
-            const headerTitle = document.createElement('div');
-            headerTitle.className = 'yield-management-title';
-            headerTitle.innerText = '1. Названия периодов на графике:';
-            container.appendChild(headerTitle);
-
-            const periodRow = document.createElement('div');
-            periodRow.className = 'yield-row';
-            periods.forEach((p, i) => {
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.className = 'input-cell yield-period-input';
-                input.value = p;
-                input.onchange = function() { periods[i] = this.value; updateChart(); };
-                periodRow.appendChild(input);
-            });
-            container.appendChild(periodRow);
-
-            // 2. Ввод числовых параметров доходности по каждому фонду
-            fundsData.forEach((fund, fIndex) => {
-                const fundTitle = document.createElement('div');
-                fundTitle.className = 'yield-management-title';
-                fundTitle.innerText = `Доходность (%) для: ${fund.name}`;
-                container.appendChild(fundTitle);
-
-                const inputsRow = document.createElement('div');
-                inputsRow.className = 'yield-row';
-
-                for(let i=0; i<4; i++) {
-                    if (fund.yields[i] === undefined) fund.yields[i] = 0;
-                    
-                    const wrapper = document.createElement('div');
-                    wrapper.style.position = 'relative';
-                    wrapper.style.flex = '1';
-
-                    const input = document.createElement('input');
-                    input.type = 'number';
-                    input.step = '0.1';
-                    input.className = 'input-cell';
-                    input.value = fund.yields[i];
-                    input.onchange = function() { 
-                        fund.yields[i] = parseFloat(this.value) || 0; 
-                        updateChart(); 
-                    };
-
-                    wrapper.appendChild(input);
-                    inputsRow.appendChild(wrapper);
-                }
-                container.appendChild(inputsRow);
-            });
-        }
-
         function updateFundData(index, field, value) {
             fundsData[index][field] = value;
             if (field === 'share') {
                 checkTotalShare();
                 renderPassports();
-                updateChart();
             } else if (field === 'name') {
                 renderPassports();
-                renderYieldModifiers();
             }
+        }
+
+        function updatePortfolioYield() {
+            globalPeriod = document.getElementById('portfolio-period').value.trim() || "Целевая доходность";
+            globalYieldValue = parseFloat(document.getElementById('portfolio-value').value) || 0;
+            updateChart();
         }
 
         function checkTotalShare() {
@@ -316,8 +263,7 @@
                 name: name,
                 share: share,
                 goal: goal,
-                insight: insight,
-                yields: [1.0, 3.0, 6.0, 12.0]
+                insight: insight
             });
 
             document.getElementById('new-name').value = '';
@@ -333,50 +279,44 @@
             initApp();
         }
 
+        // Обновление графика: рендерим один столбец для портфеля целиком
         function updateChart() {
             const ctx = document.getElementById('portfolioChart').getContext('2d');
             
-            let totalShare = fundsData.reduce((sum, f) => sum + f.share, 0) || 100;
-            let blendedYields = [0, 0, 0, 0];
-
-            fundsData.forEach(fund => {
-                const weight = fund.share / totalShare;
-                for(let i=0; i<4; i++) {
-                    blendedYields[i] += (fund.yields[i] || 0) * weight;
-                }
-            });
-
             if (chartInstance) {
                 chartInstance.destroy();
             }
 
             chartInstance = new Chart(ctx, {
-                type: 'line',
+                type: 'bar',
                 data: {
-                    labels: periods,
+                    labels: [globalPeriod],
                     datasets: [{
-                        label: 'Взвешенная доходность портфеля (%)',
-                        data: blendedYields.map(v => parseFloat(v.toFixed(2))),
-                        borderColor: '#EF3124',
-                        backgroundColor: 'rgba(239, 49, 36, 0.05)',
-                        borderWidth: 3,
-                        pointBackgroundColor: '#0F172A',
-                        pointBorderColor: '#fff',
-                        pointRadius: 5,
-                        fill: true,
-                        tension: 0.1
+                        label: 'Доходность собранного портфеля (%)',
+                        data: [globalYieldValue],
+                        backgroundColor: '#EF3124', // Фирменный красный Альфа-Капитал
+                        borderRadius: 12,
+                        borderWidth: 0,
+                        barThickness: 120 // Оптимальная ширина для премиального отображения
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: (ctx) => ` ${ctx.raw}%` } }
+                    },
                     scales: {
                         y: { 
                             grid: { color: '#F1F5F9' },
-                            ticks: { callback: function(value) { return value + '%'; }, color: '#64748B' }
+                            ticks: { callback: function(value) { return value + '%'; }, color: '#64748B', font: { weight: 500 } },
+                            min: 0
                         },
-                        x: { grid: { display: false }, ticks: { color: '#64748B', font: { weight: 600 } } }
+                        x: { 
+                            grid: { display: false }, 
+                            ticks: { color: '#0F172A', font: { size: 13, weight: 700 } } 
+                        }
                     }
                 }
             });
