@@ -1,360 +1,721 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALFA PRIVATE — ИНВЕСТИЦИОННЫЙ ПОРТФЕЛЬ ФОНДОВ</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap');
-        
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: #F1F5F9; color: #0F172A; padding: 20px; -webkit-font-smoothing: antialiased; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        
-        header { display: flex; justify-content: space-between; align-items: center; background: white; padding: 20px 25px; border-radius: 16px; border: 1px solid #E2E8F0; margin-bottom: 25px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
-        .logo-area { display: flex; align-items: center; gap: 15px; }
-        .logo { background-color: #EF3124; color: white; font-weight: 900; font-size: 26px; padding: 4px 16px; border-radius: 8px; letter-spacing: -1px; }
-        .logo-title { font-size: 18px; font-weight: 700; color: #0F172A; text-transform: uppercase; letter-spacing: 0.5px; }
-        .logo-subtitle { font-size: 11px; color: #64748B; margin-top: 2px; font-weight: 500; }
-        .author-area { text-align: right; }
-        .author-name { font-size: 15px; font-weight: 700; color: #0F172A; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Финансовая безопасность профессиональных спортсменов — УК Альфа-Капитал</title>
 
-        .main-grid { display: grid; grid-template-columns: 1fr; gap: 25px; }
-        @media (min-width: 1024px) { .main-grid { grid-template-columns: 5fr 7fr; } }
+  <style>
+    @page {
+      size: A4;
+      margin: 0;
+    }
 
-        .panel { background: white; border: 1px solid #E2E8F0; border-radius: 16px; padding: 25px; height: fit-content; box-shadow: 0 1px 3px rgba(0,0,0,0.02); margin-bottom: 25px; }
-        .panel-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #F1F5F9; padding-bottom: 15px; margin-bottom: 20px; }
-        .panel-title { font-size: 13px; font-weight: 700; text-transform: uppercase; color: #0F172A; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px; }
-        .panel-title::before { content: ''; width: 4px; height: 14px; background-color: #EF3124; display: inline-block; border-radius: 2px; }
+    :root {
+      --red: #ef3124;
+      --red-dark: #d9251a;
+      --black: #1d1d1b;
+      --dark: #292929;
+      --gray-900: #363636;
+      --gray-700: #5f5f5f;
+      --gray-500: #8a8a8a;
+      --gray-300: #dedede;
+      --gray-100: #f4f4f4;
+      --white: #ffffff;
+    }
 
-        .table-wrapper { overflow-x: auto; margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
-        th { color: #64748B; font-weight: 600; padding: 12px 10px; border-bottom: 2px solid #F1F5F9; text-transform: uppercase; font-size: 10px; }
-        td { padding: 10px 8px; border-bottom: 1px solid #F1F5F9; }
-        
-        .input-cell { width: 100%; border: 1px solid #CBD5E1; padding: 6px 10px; border-radius: 6px; font-size: 13px; color: #0F172A; font-weight: 500; background: #F8FAFC; }
-        .input-cell:focus { border-color: #EF3124; outline: none; background: white; }
-        .share-input { width: 70px; text-align: center; font-family: monospace; font-size: 14px; font-weight: 700; }
+    * {
+      box-sizing: border-box;
+    }
 
-        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-        .status-badge.success { background: #DCFCE7; color: #15803D; }
-        .status-badge.error { background: #FEE2E2; color: #B91C1C; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: #d8d8d8;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--black);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
 
-        .btn { background: #0F172A; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-block; }
-        .btn:hover { background: #1E293B; }
-        .btn-red { background: #EF3124; }
-        .btn-red:hover { background: #D6281B; }
-        .btn-del { background: transparent; color: #94A3B8; font-size: 16px; padding: 4px 8px; border: none; cursor: pointer; }
-        .btn-del:hover { color: #EF3124; }
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto;
+      overflow: hidden;
+      background: var(--white);
+    }
 
-        .passport-card { background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 15px; margin-bottom: 15px; }
-        .passport-name { font-size: 14px; font-weight: 700; color: #0F172A; margin-bottom: 5px; display: flex; justify-content: space-between; }
-        .passport-goal { font-size: 11px; font-weight: 600; color: #EF3124; text-transform: uppercase; margin-bottom: 8px; }
-        .passport-text { font-size: 12px; color: #475569; line-height: 1.5; }
+    /* =========================
+       ВЕРХНЯЯ ЧАСТЬ
+    ========================== */
 
-        /* Премиальная строка доходности портфеля */
-        .yield-result-row { background: #0F172A; color: white; padding: 16px 20px; border-radius: 12px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08); }
-        .yield-result-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #94A3B8; font-weight: 600; }
-        .yield-result-period { font-size: 15px; font-weight: 700; margin-top: 2px; color: #FFFFFF; }
-        .yield-result-value { font-size: 28px; font-weight: 900; color: #EF3124; font-family: monospace; }
+    .hero {
+      position: relative;
+      min-height: 83mm;
+      padding: 12mm 15mm 10mm;
+      overflow: hidden;
+      background: var(--black);
+      color: var(--white);
+    }
 
-        .chart-box { height: 260px; position: relative; margin-bottom: 30px; }
-        
-        .portfolio-yield-section { background: #F8FAFC; border: 1px solid #E2E8F0; padding: 15px; border-radius: 12px; margin-top: 20px; }
-        .yield-flex-inputs { display: flex; gap: 12px; margin-top: 10px; }
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: -63mm;
+      right: -53mm;
+      width: 108mm;
+      height: 108mm;
+      border: 17mm solid var(--red);
+      border-radius: 50%;
+      opacity: 1;
+    }
 
-        @media print {
-            body { background-color: white; color: black; padding: 0; }
-            header { box-shadow: none; border-bottom: 2px solid #0F172A; border-radius: 0; padding: 10px 0; }
-            .panel { box-shadow: none; border: none; padding: 0; margin-bottom: 30px; page-break-inside: avoid; }
-            .main-grid { display: block; }
-            .yield-result-row { background: #F8FAFC !important; border: 2px solid #0F172A !important; color: #0F172A !important; box-shadow: none; }
-            .yield-result-label { color: #64748B !important; }
-            .yield-result-period { color: #0F172A !important; }
-            .btn, .btn-del, .no-print, #add-form-container, .portfolio-yield-section, th:last-child, td:last-child { display: none !important; }
-            .input-cell { border: none !important; background: transparent !important; padding: 0 !important; font-size: 13px !important; color: #0F172A !important; box-shadow: none !important; -webkit-appearance: none; appearance: none; }
-            .share-input { font-weight: 700 !important; text-align: left !important; }
-            td { padding: 12px 10px !important; border-bottom: 1px solid #E2E8F0 !important; }
-            .passport-card { background: white !important; border: 1px solid #E2E8F0 !important; page-break-inside: avoid; }
-        }
-    </style>
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: 17mm;
+      bottom: -16mm;
+      width: 31mm;
+      height: 31mm;
+      background: var(--red);
+      transform: rotate(45deg);
+    }
+
+    .header {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10mm;
+      margin-bottom: 12mm;
+    }
+
+    .brand-block {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    /*
+      При получении официального SVG/PNG его можно встроить сюда
+      в формате data:image/...;base64,...
+
+      Пример:
+      <img class="official-logo"
+           src="data:image/svg+xml;base64,ВАШ_BASE64_КОД"
+           alt="УК Альфа-Капитал">
+
+      В текущей версии графический логотип намеренно не имитируется.
+    */
+
+    .company-name {
+      color: var(--white);
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.35px;
+      line-height: 1.1;
+    }
+
+    .company-description {
+      margin-top: 2.5mm;
+      color: #bdbdbd;
+      font-size: 8.2px;
+      line-height: 1.35;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+    }
+
+    .header-contact {
+      color: #d2d2d2;
+      font-size: 8.8px;
+      line-height: 1.5;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .header-contact strong {
+      color: var(--white);
+      font-size: 9.8px;
+    }
+
+    .header-contact a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 145mm;
+    }
+
+    .hero-label {
+      margin-bottom: 4mm;
+      color: #ff827a;
+      font-size: 8.8px;
+      font-weight: 700;
+      letter-spacing: 1.1px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 135mm;
+      margin: 0 0 4.5mm;
+      color: var(--white);
+      font-size: 29px;
+      font-weight: 700;
+      line-height: 1.06;
+      letter-spacing: -0.75px;
+    }
+
+    .hero-text {
+      max-width: 124mm;
+      margin: 0;
+      color: #dddddd;
+      font-size: 12px;
+      line-height: 1.48;
+    }
+
+    /* =========================
+       ОСНОВНОЙ КОНТЕНТ
+    ========================== */
+
+    .content {
+      padding: 8mm 15mm 8mm;
+    }
+
+    .intro {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 7mm;
+      margin-bottom: 6mm;
+    }
+
+    .intro-main {
+      border-left: 4px solid var(--red);
+      padding: 0.7mm 0 0.7mm 4mm;
+    }
+
+    .intro-main h2 {
+      margin: 0 0 2.5mm;
+      color: var(--black);
+      font-size: 15.5px;
+      line-height: 1.18;
+      letter-spacing: -0.25px;
+    }
+
+    .intro-main p {
+      margin: 0;
+      color: #515151;
+      font-size: 9.8px;
+      line-height: 1.48;
+    }
+
+    .intro-note {
+      padding: 3.8mm 4mm;
+      border-radius: 1.5mm;
+      background: var(--gray-100);
+    }
+
+    .note-title {
+      margin-bottom: 1.7mm;
+      color: var(--red);
+      font-size: 8.5px;
+      font-weight: 700;
+      letter-spacing: 0.75px;
+      text-transform: uppercase;
+    }
+
+    .intro-note p {
+      margin: 0;
+      color: #4e4e4e;
+      font-size: 9.1px;
+      line-height: 1.42;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 3mm;
+      margin: 0 0 3mm;
+      color: var(--black);
+      font-size: 10.3px;
+      font-weight: 700;
+      letter-spacing: 0.9px;
+      text-transform: uppercase;
+    }
+
+    .section-title::before {
+      width: 7mm;
+      height: 2.1mm;
+      background: var(--red);
+      content: "";
+    }
+
+    /* =========================
+       РОЛИ
+    ========================== */
+
+    .roles {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4mm;
+      margin-bottom: 4mm;
+    }
+
+    .role-card {
+      min-height: 39mm;
+      padding: 3.8mm 4.5mm;
+      border: 1px solid var(--gray-300);
+      border-radius: 1.5mm;
+    }
+
+    .role-card.agent {
+      border-top: 4px solid var(--black);
+    }
+
+    .role-card.partner {
+      border-top: 4px solid var(--red);
+    }
+
+    .role-card h3 {
+      margin: 0 0 2.5mm;
+      color: var(--black);
+      font-size: 12.4px;
+      line-height: 1.2;
+    }
+
+    .role-card ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .role-card li {
+      position: relative;
+      margin-bottom: 1.3mm;
+      padding-left: 3.6mm;
+      color: #555555;
+      font-size: 8.9px;
+      line-height: 1.34;
+    }
+
+    .role-card li::before {
+      position: absolute;
+      top: -0.4mm;
+      left: 0;
+      color: var(--red);
+      content: "•";
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .statement {
+      margin-bottom: 5mm;
+      padding: 3.3mm 5mm;
+      border-radius: 1.5mm;
+      background: var(--black);
+      color: var(--white);
+      font-size: 10px;
+      line-height: 1.42;
+      text-align: center;
+    }
+
+    /* =========================
+       ЧТО ПОЛУЧАЕТ СПОРТСМЕН
+    ========================== */
+
+    .benefits {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 3mm;
+      margin-bottom: 5mm;
+    }
+
+    .benefit-card {
+      min-height: 37mm;
+      padding: 3.3mm;
+      border-radius: 1.5mm;
+      background: var(--gray-100);
+    }
+
+    .benefit-number {
+      margin-bottom: 2mm;
+      color: var(--red);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .benefit-card h4 {
+      margin: 0 0 1.6mm;
+      color: var(--black);
+      font-size: 9.6px;
+      line-height: 1.2;
+    }
+
+    .benefit-card p {
+      margin: 0;
+      color: #5b5b5b;
+      font-size: 8.1px;
+      line-height: 1.36;
+    }
+
+    /* =========================
+       ЭТАПЫ КАРЬЕРЫ
+    ========================== */
+
+    .career-route {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      margin-bottom: 5mm;
+      overflow: hidden;
+      border: 1px solid var(--gray-300);
+      border-radius: 1.5mm;
+    }
+
+    .career-stage {
+      min-height: 41mm;
+      padding: 3.6mm 3.8mm;
+      border-right: 1px solid var(--gray-300);
+    }
+
+    .career-stage:last-child {
+      border-right: 0;
+    }
+
+    .stage-number {
+      margin-bottom: 1.7mm;
+      color: var(--red);
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    .career-stage h4 {
+      margin: 0 0 1.7mm;
+      color: var(--black);
+      font-size: 10.6px;
+      line-height: 1.2;
+    }
+
+    .career-stage p {
+      margin: 0;
+      color: #565656;
+      font-size: 8.3px;
+      line-height: 1.36;
+    }
+
+    /* =========================
+       НИЖНИЙ БЛОК / CTA
+    ========================== */
+
+    .bottom-section {
+      display: grid;
+      grid-template-columns: 1.23fr 0.77fr;
+      gap: 5mm;
+      margin-bottom: 4mm;
+    }
+
+    .value-block {
+      padding: 4mm 4.5mm;
+      border-radius: 1.5mm;
+      background: var(--gray-100);
+    }
+
+    .value-block h3 {
+      margin: 0 0 2mm;
+      color: var(--black);
+      font-size: 11.5px;
+      line-height: 1.2;
+    }
+
+    .value-block p {
+      margin: 0;
+      color: #505050;
+      font-size: 9px;
+      line-height: 1.43;
+    }
+
+    .value-block strong {
+      color: var(--black);
+    }
+
+    .cta {
+      padding: 4mm 4.5mm;
+      border-radius: 1.5mm;
+      background: var(--red);
+      color: var(--white);
+    }
+
+    .cta h3 {
+      margin: 0 0 1.8mm;
+      color: var(--white);
+      font-size: 11.5px;
+      line-height: 1.2;
+    }
+
+    .cta p {
+      margin: 0 0 3mm;
+      color: var(--white);
+      font-size: 8.8px;
+      line-height: 1.38;
+    }
+
+    .cta-contact {
+      padding-top: 2.5mm;
+      border-top: 1px solid rgba(255, 255, 255, 0.48);
+      color: var(--white);
+      font-size: 8.5px;
+      line-height: 1.48;
+    }
+
+    .cta-contact strong {
+      font-size: 9.2px;
+    }
+
+    .cta-contact a {
+      color: var(--white);
+      text-decoration: none;
+    }
+
+    /* =========================
+       ДИСКЛЕЙМЕР
+    ========================== */
+
+    .footer {
+      padding-top: 2.2mm;
+      border-top: 1px solid var(--gray-300);
+      color: #818181;
+      font-size: 6.5px;
+      line-height: 1.32;
+    }
+
+    @media print {
+      body {
+        background: var(--white);
+      }
+
+      .page {
+        margin: 0;
+      }
+    }
+  </style>
 </head>
+
 <body>
+  <main class="page">
 
-    <div class="container">
-        <!-- Шапка бренда -->
-        <header>
-            <div class="logo-area">
-                <div class="logo">А</div>
-                <div>
-                    <div class="logo-title">Альфа-Капитал <span style="font-size: 10px; color: white; font-family: monospace; background: #EF3124; padding: 2px 6px; border-radius: 4px; margin-left: 5px; vertical-align: middle;">PRIVATE</span></div>
-                    <div class="logo-subtitle">Интерактивный конструктор индивидуального портфеля фондов</div>
-                </div>
-            </div>
-            <div class="author-area">
-                <div class="author-name">Константин</div>
-            </div>
-        </header>
+    <!-- ШАПКА -->
+    <section class="hero">
+      <div class="header">
 
-        <div class="main-grid">
-            <!-- Левая колонка: Таблица и Управление параметрами -->
-            <div>
-                <div class="panel">
-                    <div class="panel-header">
-                        <div class="panel-title">Управление аллокацией активов</div>
-                        <div id="status-container" class="no-print">
-                            <span id="status-badge" class="status-badge success">✓ Доли: 100%</span>
-                        </div>
-                    </div>
+        <div class="brand-block">
+          <!--
+            Официальный логотип намеренно не имитируется.
+            Когда будет официальный SVG/PNG, вставь здесь:
 
-                    <div class="table-wrapper">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Название фонда</th>
-                                    <th style="text-align: center; width: 100px;">Доля %</th>
-                                    <th style="width: 50px;" class="no-print"></th>
-                                </tr>
-                            </thead>
-                            <tbody id="funds-tbody"></tbody>
-                        </table>
-                    </div>
+            <img class="official-logo"
+                 src="data:image/svg+xml;base64,ВАШ_BASE64_КОД"
+                 alt="УК Альфа-Капитал">
 
-                    <!-- Форма добавления нового фонда -->
-                    <div id="add-form-container" style="background: #F8FAFC; padding: 15px; border-radius: 12px; border: 1px solid #E2E8F0;">
-                        <h4 style="font-size: 11px; text-transform: uppercase; color: #64748B; margin-bottom: 10px;">Добавить новый фонд в модель:</h4>
-                        <input type="text" id="new-name" class="input-cell" placeholder="Название фонда (например, АК БАРС Облигации)" style="margin-bottom: 10px; background: white;">
-                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                            <input type="number" id="new-share" class="input-cell share-input" placeholder="Доля %" style="background: white;">
-                            <input type="text" id="new-goal" class="input-cell" placeholder="Цель (например, Защита капитала)" style="background: white;">
-                        </div>
-                        <textarea id="new-insight" class="input-cell" placeholder="Аналитический инсайд / Мнение советника..." style="height: 60px; margin-bottom: 12px; background: white; font-size: 12px; resize: none;"></textarea>
-                        <button type="button" class="btn btn-red" onclick="addNewFund()">Добавить в структуру</button>
-                    </div>
+            И добавь стиль:
+            .official-logo { width: 43mm; height: auto; display: block; }
+          -->
 
-                    <!-- Панель настройки доходности всей строки -->
-                    <div class="portfolio-yield-section no-print">
-                        <h4 style="font-size: 11px; text-transform: uppercase; color: #64748B;">Настройка итоговой строки доходности:</h4>
-                        <div class="yield-flex-inputs">
-                            <div style="flex: 2;">
-                                <label style="font-size: 10px; color: #64748B; display:block; margin-bottom:4px;">Текст периода</label>
-                                <input type="text" id="portfolio-period" class="input-cell" value="Фактическая доходность за прошлый сезон" style="background: white;" oninput="updatePortfolioYield()">
-                            </div>
-                            <div style="flex: 1;">
-                                <label style="font-size: 10px; color: #64748B; display:block; margin-bottom:4px;">Результат %</label>
-                                <input type="number" id="portfolio-value" class="input-cell" value="18.2" step="0.1" style="background: white; font-weight:700;" oninput="updatePortfolioYield()">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          <div class="company-name">УК «Альфа-Капитал»</div>
 
-            <!-- Правая колонка: Строка доходности + Пирог долей + Паспорта -->
-            <div class="panel">
-                <div class="panel-header">
-                    <div class="panel-title">Аналитика и структура портфеля</div>
-                </div>
-
-                <!-- ОТДЕЛЬНАЯ СТРОКА: Фактическая доходность портфеля за указанный период -->
-                <div class="yield-result-row">
-                    <div>
-                        <div class="yield-result-label">Результат управления портфелем</div>
-                        <div id="display-period" class="yield-result-period">Фактическая доходность за прошлый сезон</div>
-                    </div>
-                    <div id="display-value" class="yield-result-value">+18.2%</div>
-                </div>
-
-                <!-- ДИАГРАММА В ВИДЕ ПИРОГА С ДОЛЯМИ -->
-                <div class="chart-box">
-                    <canvas id="shareChart"></canvas>
-                </div>
-
-                <!-- Паспорта фондов под графиком -->
-                <div id="passports-container"></div>
-            </div>
+          <div class="company-description">
+            Партнёрская программа<br>
+            для спортивных агентств
+          </div>
         </div>
-    </div>
 
-    <script>
-        let fundsData = [
-            {
-                name: "АК БАРС Облигации",
-                share: 60,
-                goal: "Защита капитала",
-                insight: "Фонд демонстрирует стабильную доходность выше депозитов за счет качественного динамического управления портфелем корпоративных облигаций первого эшелона."
-            },
-            {
-                name: "Альфа-Капитал Ликвидность",
-                share: 40,
-                goal: "Размещение резерва",
-                insight: "Идеальный инструмент для краткосрочного размещения крупных денежных средств. Обеспечивает доходность на уровне ставки ЦБ РФ с возможностью изъятия без потери процентов."
-            }
-        ];
+        <div class="header-contact">
+          <strong>Изюмов Константин</strong><br>
+          Директор по работе с ключевыми клиентами<br>
+          <a href="tel:+79627170770">+7 962 717-07-70</a> ·
+          <a href="mailto:k.izyumov@alfacapital.ru">k.izyumov@alfacapital.ru</a>
+        </div>
 
-        let shareChartInstance = null;
+      </div>
 
-        // Палитра премиальных цветов Альфа-Капитал Private
-        const chartColors = [
-            '#EF3124', // Фирменный красный
-            '#0F172A', // Глубокий графит
-            '#475569', // Стальной
-            '#94A3B8', // Дымчатый
-            '#CBD5E1'  // Светло-серебряный
-        ];
+      <div class="hero-content">
+        <div class="hero-label">Партнёрство для спортивных агентств</div>
 
-        function initApp() {
-            renderTable();
-            renderPassports();
-            updatePortfolioYield(); // Обновляет строку и перерисовывает круговой график
-        }
+        <h1>Финансовая безопасность профессиональных спортсменов</h1>
 
-        function renderTable() {
-            const tbody = document.getElementById('funds-tbody');
-            tbody.innerHTML = '';
+        <p class="hero-text">
+          Система долгосрочного сопровождения спортсменов:
+          от первого крупного контракта — к финансовой устойчивости
+          после завершения спортивной карьеры.
+        </p>
+      </div>
+    </section>
 
-            fundsData.forEach((fund, index) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>
-                        <input type="text" class="input-cell" value="${fund.name}" onchange="updateFundData(${index}, 'name', this.value)">
-                    </td>
-                    <td style="text-align: center;">
-                        <input type="number" class="input-cell share-input" value="${fund.share}" onchange="updateFundData(${index}, 'share', parseInt(this.value) || 0)">
-                    </td>
-                    <td style="text-align: center;" class="no-print">
-                        <button class="btn-del" onclick="deleteFund(${index})">×</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-            checkTotalShare();
-        }
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
+    <section class="content">
 
-        function renderPassports() {
-            const container = document.getElementById('passports-container');
-            container.innerHTML = '';
+      <section class="intro">
+        <div class="intro-main">
+          <h2>Контракт создаёт доход. Система управления капиталом создаёт будущее.</h2>
+          <p>
+            Значительная часть жизненного дохода спортсмена формируется за ограниченный
+            период активной карьеры. Важно не только зарабатывать, но и выстроить понятную
+            финансовую систему: создать резерв, снизить риски, сохранить капитал
+            и подготовиться к жизни после спорта.
+          </p>
+        </div>
 
-            fundsData.forEach((fund) => {
-                if(fund.share <= 0) return;
-                const card = document.createElement('div');
-                card.className = 'passport-card';
-                card.innerHTML = `
-                    <div class="passport-name">
-                        <span>${fund.name}</span>
-                        <span style="color: #EF3124; font-family: monospace;">${fund.share}%</span>
-                    </div>
-                    <div class="passport-goal">${fund.goal}</div>
-                    <div class="passport-text">${fund.insight}</div>
-                `;
-                container.appendChild(card);
-            });
-        }
+        <div class="intro-note">
+          <div class="note-title">Цель сотрудничества</div>
+          <p>
+            Дополнить спортивную экспертизу агентства профессиональным финансовым
+            сопровождением — без вмешательства в отношения агента и игрока.
+          </p>
+        </div>
+      </section>
 
-        function updateFundData(index, field, value) {
-            fundsData[index][field] = value;
-            if (field === 'share') {
-                checkTotalShare();
-                renderPassports();
-                renderShareChart();
-            } else if (field === 'name') {
-                renderPassports();
-                renderShareChart();
-            }
-        }
+      <div class="section-title">Разделение ролей в интересах игрока</div>
 
-        // Синхронизация данных с отдельной строкой фактических результатов
-        function updatePortfolioYield() {
-            const periodInput = document.getElementById('portfolio-period').value.trim() || "Фактическая доходность";
-            const valueInput = parseFloat(document.getElementById('portfolio-value').value) || 0;
+      <section class="roles">
+        <div class="role-card agent">
+          <h3>Спортивное агентство</h3>
+          <ul>
+            <li>Спортивная траектория и переговоры по контрактам</li>
+            <li>Защита интересов игрока во взаимоотношениях с клубами</li>
+            <li>Развитие карьеры, репутации и новых возможностей</li>
+            <li>Сопровождение ключевых карьерных решений</li>
+          </ul>
+        </div>
 
-            document.getElementById('display-period').innerText = periodInput;
-            document.getElementById('display-value').innerText = (valueInput >= 0 ? '+' : '') + valueInput + '%';
+        <div class="role-card partner">
+          <h3>Финансовый партнёр</h3>
+          <ul>
+            <li>Диагностика финансовой ситуации и ключевых рисков</li>
+            <li>Создание резервов и долгосрочной стратегии капитала</li>
+            <li>Оценка сторонних инвестиционных предложений</li>
+            <li>Подготовка к финансовой жизни после спорта</li>
+          </ul>
+        </div>
+      </section>
 
-            renderShareChart();
-        }
+      <div class="statement">
+        Мы <strong>не заменяем агента</strong> и не вмешиваемся в его отношения с игроком.
+        Наша роль — усилить финансовый контур вокруг клиента и работать в его долгосрочных интересах.
+      </div>
 
-        function checkTotalShare() {
-            const total = fundsData.reduce((sum, f) => sum + f.share, 0);
-            const badge = document.getElementById('status-badge');
-            
-            if(total === 100) {
-                badge.className = "status-badge success";
-                badge.innerText = "✓ Доли: 100%";
-            } else {
-                badge.className = "status-badge error";
-                badge.innerText = `Внимание: долей ${total}% (надо 100%)`;
-            }
-        }
+      <div class="section-title">Что получает спортсмен</div>
 
-        function addNewFund() {
-            const name = document.getElementById('new-name').value.trim();
-            const share = parseInt(document.getElementById('new-share').value) || 0;
-            const goal = document.getElementById('new-goal').value.trim() || "Стратегическая цель";
-            const insight = document.getElementById('new-insight').value.trim() || "Аналитический обзор формируется советником.";
+      <section class="benefits">
+        <div class="benefit-card">
+          <div class="benefit-number">01</div>
+          <h4>Финансовая диагностика</h4>
+          <p>
+            Анализ активов, обязательств, расходов, резервов
+            и действующих финансовых решений.
+          </p>
+        </div>
 
-            if(!name) { alert("Введите название фонда"); return; }
+        <div class="benefit-card">
+          <div class="benefit-number">02</div>
+          <h4>Система капитала</h4>
+          <p>
+            Стратегия с учётом этапа карьеры, целей семьи,
+            горизонта и допустимого уровня риска.
+          </p>
+        </div>
 
-            fundsData.push({ name, share, goal, insight });
+        <div class="benefit-card">
+          <div class="benefit-number">03</div>
+          <h4>Защита от ошибок</h4>
+          <p>
+            Снижение риска импульсивных решений, непрозрачных проектов
+            и чрезмерной концентрации капитала.
+          </p>
+        </div>
 
-            document.getElementById('new-name').value = '';
-            document.getElementById('new-share').value = '';
-            document.getElementById('new-goal').value = '';
-            document.getElementById('new-insight').value = '';
+        <div class="benefit-card">
+          <div class="benefit-number">04</div>
+          <h4>Подготовка к будущему</h4>
+          <p>
+            Планирование финансовой устойчивости после спорта
+            и последующих жизненных целей.
+          </p>
+        </div>
+      </section>
 
-            initApp();
-        }
+      <div class="section-title">Финансовый маршрут игрока</div>
 
-        function deleteFund(index) {
-            fundsData.splice(index, 1);
-            initApp();
-        }
+      <section class="career-route">
+        <div class="career-stage">
+          <div class="stage-number">Этап 1</div>
+          <h4>Начало карьеры</h4>
+          <p>
+            Создание ликвидного резерва, финансовая дисциплина,
+            контроль расходов и защита от первых дорогостоящих ошибок.
+          </p>
+        </div>
 
-        // Рендеринг исключительно круговой диаграммы (пирога долей)
-        function renderShareChart() {
-            const ctxShare = document.getElementById('shareChart').getContext('2d');
-            
-            if (shareChartInstance) {
-                shareChartInstance.destroy();
-            }
+        <div class="career-stage">
+          <div class="stage-number">Этап 2</div>
+          <h4>Пик карьеры</h4>
+          <p>
+            Превращение высокого дохода в диверсифицированный капитал
+            с учётом рисков травм, смены клуба и изменения доходов.
+          </p>
+        </div>
 
-            const activeFunds = fundsData.filter(f => f.share > 0);
-            const shareLabels = activeFunds.map(f => f.name);
-            const shareValues = activeFunds.map(f => f.share);
+        <div class="career-stage">
+          <div class="stage-number">Этап 3</div>
+          <h4>После завершения карьеры</h4>
+          <p>
+            Сохранение финансовой устойчивости, планирование денежных потоков,
+            новых проектов, бизнеса или второй профессии.
+          </p>
+        </div>
+      </section>
 
-            shareChartInstance = new Chart(ctxShare, {
-                type: 'pie', // Классический сплошной пирог
-                data: {
-                    labels: shareLabels,
-                    datasets: [{
-                        data: shareValues,
-                        backgroundColor: chartColors.slice(0, activeFunds.length),
-                        borderWidth: 2,
-                        borderColor: '#ffffff'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { 
-                            display: true, 
-                            position: 'bottom',
-                            labels: { boxWidth: 14, padding: 15, color: '#475569', font: { size: 11, weight: 500 } }
-                        },
-                        title: { 
-                            display: true, 
-                            text: 'ГРАФИЧЕСКАЯ СТРУКТУРА ДОЛЕЙ ПОРТФЕЛЯ (%)', 
-                            color: '#64748B', 
-                            font: { size: 11, weight: 'bold' },
-                            padding: { bottom: 15 }
-                        }
-                    }
-                }
-            });
-        }
+      <section class="bottom-section">
+        <div class="value-block">
+          <h3>Ценность для спортивного агентства</h3>
+          <p>
+            <strong>Финансово устойчивый игрок — более спокойный и сфокусированный клиент.</strong>
+            Дополнительный финансовый контур помогает снизить вероятность личного финансового
+            стресса, конфликтов и потерь, связанных с непродуманными решениями. Это усиливает
+            сервис агентства и поддерживает долгосрочное доверие игроков.
+          </p>
+        </div>
 
-        document.addEventListener("DOMContentLoaded", initApp);
-    </script>
+        <div class="cta">
+          <h3>Предлагаем начать со встречи</h3>
+          <p>
+            Обсудим возможный формат взаимодействия, принципы коммуникации
+            и пилотный формат работы с клиентами агентства.
+          </p>
+
+          <div class="cta-contact">
+            <strong>Изюмов Константин</strong><br>
+            Директор по работе с ключевыми клиентами<br>
+            <a href="tel:+79627170770">+7 962 717-07-70</a><br>
+            <a href="mailto:k.izyumov@alfacapital.ru">k.izyumov@alfacapital.ru</a>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        Информация носит ознакомительный характер и не является индивидуальной инвестиционной
+        рекомендацией, публичной офертой, обещанием или гарантией доходности. Инвестиции связаны
+        с риском: стоимость активов может как увеличиваться, так и уменьшаться. Конкретные решения
+        принимаются после определения инвестиционного профиля клиента, оценки его целей, горизонта
+        инвестирования и допустимого уровня риска. Перед использованием материала необходимо
+        проверить его соответствие внутренним требованиям и правилам комплаенс УК «Альфа-Капитал».
+      </footer>
+
+    </section>
+  </main>
 </body>
 </html>
